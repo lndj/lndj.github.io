@@ -1,0 +1,34 @@
+# The URL the site will be built for
+base_url = "https://ning.dev"
+
+title = "胡言乱语"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
+
+theme = "zola-pickles"
+
+[extra]
+# Put all your custom variables here
+
+# A line to display underneath the main title
+subtitle = "胡说八道"
+
+# Text to display in the footer of the page
+copyright = "Copyright Ning 2021"
+
+# Your Google Analytics ID
+analytics = "G-F0XRKJNXR5"
+
+# See below
+katex_enable = true
+
+# See below
+instantpage_enable = true
