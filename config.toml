@@ -6,17 +6,10 @@ title = "胡言乱语"
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
 
-# Whether to do syntax highlighting
-# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
-# `highlight_code` has been moved to a [markdown] section. Top level `highlight_code` and `highlight_theme` will stop working in 0.14.
-highlight_code = true
-
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = true
 
 theme = "zola-pickles"
-
-output_dir = "docs"
 
 [extra]
 # Put all your custom variables here
