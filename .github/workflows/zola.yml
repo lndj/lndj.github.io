@@ -13,7 +13,7 @@ jobs:
       - name: Deploy to gh-pages branch
         uses: shalzz/zola-deploy-action@v0.13.0
         env:
-          BUILD_THEMES: false
+          BUILD_THEMES: true
           BUILD_DIR: .
           # Target branch
           PAGES_BRANCH: gh-pages
