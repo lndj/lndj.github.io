@@ -12,8 +12,11 @@ tags = [
 <!-- more -->
 
 哈哈哈，面试了几次，还是有点成长的，记录一下。
-哈哈哈，面试了几次，还是有点成长的，记录一下。
-哈哈哈，面试了几次，还是有点成长的，记录一下。
+
+{% figure(link="https://www.example.com/", src="https://www.example.com/img.jpeg", alt="sample alt text") %}
+Your caption here.
+{% end %}
+
 哈哈哈，面试了几次，还是有点成长的，记录一下。
 
 
@@ -22,4 +25,7 @@ print('hello world')
 ```
 
 哈哈哈，面试了几次，还是有点成长的，记录一下。
+
+{% katex(block=true) %}\KaTeX{% end %}
+
 哈哈哈，面试了几次，还是有点成长的，记录一下。
