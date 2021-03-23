@@ -1,7 +1,7 @@
 +++
-title = "从面试中发现自我的短板"
+title = "博客功能测试"
 date = 2021-03-10
-category = "成长"
+category = "测试"
 tags = [
   "placeholder posts",
   "prime-number posts",
@@ -18,6 +18,11 @@ This is some figure shortcode.
 {% end %}
 
 测试一下各种功能。
+
+## Some Youtube video here
+
+{% youtube(id="linlz7-Pnvw") %}
+{% end %}
 
 
 ```python
