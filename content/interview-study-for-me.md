@@ -7,25 +7,25 @@ tags = [
   "prime-number posts",
 ]
 +++
-哈哈哈，面试了几次，还是有点成长的，记录一下。
+本文尽量测试博客的各项功能。
 
 <!-- more -->
 
-哈哈哈，面试了几次，还是有点成长的，记录一下。
+下面开始测试：
 
-{% figure(link="https://www.example.com/", src="https://www.example.com/img.jpeg", alt="sample alt text") %}
-Your caption here.
+{% figure(link="https://github.com/lndj", src="https://camo.githubusercontent.com/400c4e52df43f6a0ab8a89b74b1a78d1a64da56a7848b9110c9d2991bb7c3105/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4c6963656e73652d47504c76332d626c75652e737667", alt="sample alt text") %}
+This is some figure shortcode.
 {% end %}
 
-哈哈哈，面试了几次，还是有点成长的，记录一下。
+测试一下各种功能。
 
 
 ```python
 print('hello world')
 ```
 
-哈哈哈，面试了几次，还是有点成长的，记录一下。
+下面的是 katex 支持测试：
 
 {% katex(block=true) %}\KaTeX{% end %}
 
-哈哈哈，面试了几次，还是有点成长的，记录一下。
+哈哈。
