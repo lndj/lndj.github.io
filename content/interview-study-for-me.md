@@ -21,8 +21,8 @@ This is some figure shortcode.
 
 ## Some Youtube video here
 
-{% youtube(id="linlz7-Pnvw") %}
-{% end %}
+{{ youtube(id="linlz7-Pnvw") }}
+
 
 
 ```python
