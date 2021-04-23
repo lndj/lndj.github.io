@@ -17,7 +17,6 @@ tags = [
 This is some figure shortcode.
 {% end %}
 
-测试一下各种功能。
 
 ## Some Youtube video here
 
@@ -32,5 +31,3 @@ print('hello world')
 下面的是 katex 支持测试：
 
 {% katex(block=true) %}\KaTeX{% end %}
-
-哈哈。
