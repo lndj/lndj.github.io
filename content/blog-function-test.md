@@ -17,6 +17,9 @@ tags = [
 This is some figure shortcode.
 {% end %}
 
+## 图片处理
+
+{{ resize_image(path="images/overlay_constructs.jpg", width=480, height=240, op="fit") }}
 
 ## Some Youtube video here
 
