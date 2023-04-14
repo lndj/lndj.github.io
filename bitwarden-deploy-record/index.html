@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="referrer" content="no-referrer">
+
+        <!-- Enable responsiveness on mobile devices-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+        <title>记录一下折腾 Bitwarden 密码管理器 | 胡言乱语</title>
+<meta property="og:title" content="记录一下折腾 Bitwarden 密码管理器 | 胡言乱语" />
+<meta name="twitter:title" content="记录一下折腾 Bitwarden 密码管理器 | 胡言乱语" />
+
+        
+
+        <meta property="og:site_name" content="胡言乱语" />
+        <meta property="og:url" content="https:&#x2F;&#x2F;blog.ning.dev" />
+
+        <script src="https://blog.ning.dev/js/instantpage.min.js" type="module" defer></script>
+
+
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://blog.ning.dev/base.css" />
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+        <link href="https://blog.ning.dev/fontawesome/fontawesome.css" rel="stylesheet">
+        <link href="https://blog.ning.dev/fontawesome/brands.css" rel="stylesheet">
+        <link href="https://blog.ning.dev/fontawesome/solid.css" rel="stylesheet">
+
+        <link rel='icon' type='image/x-icon' href="https://blog.ning.dev/favicon.ico" />
+
+        
+
+        
+
+    </head>
+    <body>
+        <a href="#main" class="skip-link p-screen-reader-text">Skip to content</a>
+        <header class="l-header">
+            <h1 class="c-title p-title"><a href="https:&#x2F;&#x2F;blog.ning.dev" class="p-title__link">胡言乱语</a></h1>
+            <p class="p-subtitle">
+                胡说八道
+            </p>
+            </header>
+
+        <main id="main" class="l-main">
+            
+<article class="p-article">
+    <header>
+        <h1>记录一下折腾 Bitwarden 密码管理器
+</h1>
+        <div>
+            <div class="c-time">
+
+                <time datetime="2023-04-14">
+                    2023-04-14
+                </time>
+                
+                 - (3 min read)
+            </div>
+        </div>
+    </header>
+    
+    <section id="js-article" class="p-article__body">
+        <p>近来萌生想要替换 1Password 的想法，于是有想起来之前曾经尝试使用一段时间自部署的 Bitwarden 服务，由于当时购买的腾讯云机器后续没有继续续费以及国内域名需要备案等问题，遂放弃。</p>
+<p>本着“降本增效”的原则，看上了 Google cloud compute 的免费额度。 此处记录一下部署的信息，以免日后遗忘。</p>
+<p>部署直接使用了开源项目： https://github.com/dadatuputi/bitwarden_gcloud</p>
+<p>包含如下能力：</p>
+<ol>
+<li>部署了 Rust 写的 server 服务；</li>
+<li>使用 Caddy 来为域名自动 Https;</li>
+<li>fail2ban;</li>
+<li>自动升级镜像；</li>
+<li>阻止来自特定国家的流量。</li>
+</ol>
+<p>上述第 5 点比较特殊，因为 Google cloud 的免费套餐里面，不包含来自 CN / AU 的流量，为了避免意外的费用，所以阻止了这两个地方的访问。</p>
+<p>为了解决不能直接访问的问题，又再 Cloudflare workers 服务上使用代理的访问来访问 Bitwarden 服务，以此来绕过这个问题。</p>
+<p>目前访问方式如下：</p>
+<p>原本 Bitwarden 服务域名： https://p.xxx.xxxx , 无代理不能直接访问，Cloudflare workers 域名： https://pp.xxx.xxxx</p>
+<p>顺便记录一下 workers 的代码：</p>
+<pre data-lang="javascript" style="background-color:#2b303b;color:#c0c5ce;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span style="color:#8fa1b3;">addEventListener</span><span>(&#39;</span><span style="color:#a3be8c;">fetch</span><span>&#39;, </span><span style="color:#bf616a;">event </span><span style="color:#b48ead;">=&gt; </span><span>{
+</span><span>    event.</span><span style="color:#8fa1b3;">respondWith</span><span>(</span><span style="color:#8fa1b3;">fetchAndApply</span><span>(event.</span><span style="color:#bf616a;">request</span><span>));
+</span><span>})
+</span><span>
+</span><span style="color:#b48ead;">async function </span><span style="color:#8fa1b3;">fetchAndApply</span><span>(</span><span style="color:#bf616a;">request</span><span>) {
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">response </span><span>= </span><span style="color:#d08770;">null</span><span>;
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">method </span><span>= </span><span style="color:#bf616a;">request</span><span>.method;
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">url </span><span>= new URL(</span><span style="color:#bf616a;">request</span><span>.</span><span style="color:#bf616a;">url</span><span>);
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">url_hostname </span><span>= </span><span style="color:#bf616a;">url</span><span>.hostname;
+</span><span>    </span><span style="color:#bf616a;">url</span><span>.protocol = &#39;</span><span style="color:#a3be8c;">https:</span><span>&#39;;
+</span><span>    </span><span style="color:#bf616a;">url</span><span>.host = &#39;</span><span style="color:#a3be8c;">p.xxxx.xxxx</span><span>&#39;;
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">request_headers </span><span>= </span><span style="color:#bf616a;">request</span><span>.headers;
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">new_request_headers </span><span>= new Headers(</span><span style="color:#bf616a;">request_headers</span><span>);
+</span><span>    </span><span style="color:#bf616a;">new_request_headers</span><span>.</span><span style="color:#96b5b4;">set</span><span>(&#39;</span><span style="color:#a3be8c;">Host</span><span>&#39;, </span><span style="color:#bf616a;">url</span><span>.host);
+</span><span>    </span><span style="color:#bf616a;">new_request_headers</span><span>.</span><span style="color:#96b5b4;">set</span><span>(&#39;</span><span style="color:#a3be8c;">Referer</span><span>&#39;, </span><span style="color:#bf616a;">url</span><span>.protocol + &#39;</span><span style="color:#a3be8c;">//</span><span>&#39; + </span><span style="color:#bf616a;">url_hostname</span><span>);
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">original_response </span><span>= </span><span style="color:#b48ead;">await </span><span style="color:#8fa1b3;">fetch</span><span>(</span><span style="color:#bf616a;">url</span><span>.href, {
+</span><span>        method: </span><span style="color:#bf616a;">method</span><span>,
+</span><span>        headers: </span><span style="color:#bf616a;">new_request_headers</span><span>,
+</span><span>        body: </span><span style="color:#bf616a;">request</span><span>.body
+</span><span>    })
+</span><span>  
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">original_response_clone </span><span>= </span><span style="color:#bf616a;">original_response</span><span>.</span><span style="color:#8fa1b3;">clone</span><span>();
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">original_text </span><span>= </span><span style="color:#d08770;">null</span><span>;
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">response_headers </span><span>= </span><span style="color:#bf616a;">original_response</span><span>.headers;
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">new_response_headers </span><span>= new Headers(</span><span style="color:#bf616a;">response_headers</span><span>);
+</span><span>    </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">status </span><span>= </span><span style="color:#bf616a;">original_response</span><span>.status;
+</span><span>
+</span><span>    </span><span style="color:#bf616a;">new_response_headers</span><span>.</span><span style="color:#96b5b4;">set</span><span>(&#39;</span><span style="color:#a3be8c;">Cache-Control</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">no-store</span><span>&#39;);
+</span><span>    </span><span style="color:#bf616a;">new_response_headers</span><span>.</span><span style="color:#96b5b4;">set</span><span>(&#39;</span><span style="color:#a3be8c;">access-control-allow-origin</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">*</span><span>&#39;);
+</span><span>    </span><span style="color:#bf616a;">new_response_headers</span><span>.</span><span style="color:#96b5b4;">set</span><span>(&#39;</span><span style="color:#a3be8c;">access-control-allow-credentials</span><span>&#39;, </span><span style="color:#d08770;">true</span><span>);
+</span><span>    </span><span style="color:#bf616a;">new_response_headers</span><span>.</span><span style="color:#96b5b4;">delete</span><span>(&#39;</span><span style="color:#a3be8c;">content-security-policy</span><span>&#39;);
+</span><span>    </span><span style="color:#bf616a;">new_response_headers</span><span>.</span><span style="color:#96b5b4;">delete</span><span>(&#39;</span><span style="color:#a3be8c;">content-security-policy-report-only</span><span>&#39;);
+</span><span>    </span><span style="color:#bf616a;">new_response_headers</span><span>.</span><span style="color:#96b5b4;">delete</span><span>(&#39;</span><span style="color:#a3be8c;">clear-site-data</span><span>&#39;);
+</span><span>
+</span><span>    </span><span style="color:#bf616a;">original_text </span><span>= </span><span style="color:#bf616a;">original_response_clone</span><span>.body
+</span><span>    </span><span style="color:#bf616a;">response </span><span>= new Response(</span><span style="color:#bf616a;">original_text</span><span>, {
+</span><span>        </span><span style="color:#bf616a;">status</span><span>,
+</span><span>        headers: </span><span style="color:#bf616a;">new_response_headers
+</span><span>    })
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">return </span><span style="color:#bf616a;">response
+</span><span>}
+</span><span>
+</span></code></pre>
+
+    </section>
+    <footer>
+        <nav class="c-pagination p-pagination">
+            <div class="c-pagination__ctrl">
+                <div class="c-pagination__newer">
+                    
+                </div>
+                <div class="c-pagination__older">
+                    
+                </div>
+            </div>
+        </nav>
+    </footer>
+</article>
+        </main>
+
+     
+      <footer class="l-footer">
+          <p class="p-copyright">
+              
+              Copyright Ning 2021
+          </p>
+      </footer>
+
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-KP8VE7HCBP"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-KP8VE7HCBP');
+      </script> 
+      <link rel="stylesheet" href="https://blog.ning.dev/css/katex.min.css">
+      <script defer src="https://blog.ning.dev/js/katex.min.js"></script>
+      <script defer src="https://blog.ning.dev/js/mathtex-script-type.min.js"></script>
+    </body>
+</html>
+            
